@@ -13,8 +13,6 @@ services:
     build:
       context: .
       dockerfile: dockerfile.dashboard
-    volumes:
-      #read-only bind mount
-      - ./data_warehouse:/data_warehouse:ro
     ports:
       - "8501:8501"
+    image: crhrbigdatadev.azurecr.io/hr-dashboard:latest
