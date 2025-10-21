@@ -9,22 +9,21 @@
 import dlt
 import requests
 import json
-
-
-# truncate staging_staging schema produced by dlt together with dagster by default
-dlt.config["load.truncate_staging_dataset"] = True
+from pathlib import Path
+import os
 
 params = {"limit": 100, "occupation-field": "6Hq3_tKo_V57"}
 
+
 def _get_ads(url_for_search, params):
-    response = requests.get(url_for_search, params=params)
-    response.raise_for_status()  # check for http errors
+    headers = {"accept": "application/json"}
+    response = requests.get(url_for_search, headers=headers, params=params)
+    response.raise_for_status()  
     return json.loads(response.content.decode("utf8"))
 
 
 @dlt.resource(table_name = "technical_field_job_ads",
-              write_disposition="replace",
-              )
+              write_disposition="replace")
 def jobads_resource(params):
 
     url = "https://jobsearch.api.jobtechdev.se"
@@ -34,7 +33,6 @@ def jobads_resource(params):
         yield ad
 
 
-# dagster only works with dlt source, not dlt resource
 @dlt.source
 def jobads_source():
     return jobads_resource(params)
